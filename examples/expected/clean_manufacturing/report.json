@@ -1,0 +1,124 @@
+{
+ "run": {
+  "contamcheck_version": "0.1.0",
+  "input": "examples/clean_manufacturing.csv",
+  "out": "examples/expected/clean_manufacturing",
+  "label_col": "defect",
+  "group_col": "batch",
+  "smiles_col": null,
+  "label_mapping": {
+   "0": 0,
+   "1": 1
+  },
+  "n_pos": 560,
+  "n_neg": 640,
+  "seed": 20261101,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "nn_seed": 20261101,
+  "n_bootstrap": 2000,
+  "folds": 5,
+  "repeats": 10,
+  "feature_cols": [
+   "melt_temp_C",
+   "hold_pressure_bar",
+   "cooling_time_s",
+   "humidity_pct",
+   "screw_speed_rpm"
+  ],
+  "feature_source": "auto_numeric",
+  "python": "3.13.5",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "numpy": "2.5.4",
+  "pandas": "3.1.0",
+  "rdkit_available": false,
+  "argv": [
+   "--input",
+   "examples/clean_manufacturing.csv",
+   "--label-col",
+   "defect",
+   "--group-col",
+   "batch",
+   "--out",
+   "examples/expected/clean_manufacturing"
+  ],
+  "scikit_learn": "1.9.1",
+  "wall_seconds": 4.89
+ },
+ "group_identity": {
+  "auc_group_identity_LOO_target_encoding": 0.4558,
+  "ci95": [
+   0.4235,
+   0.4877
+  ],
+  "n_bootstrap_draws": 2000,
+  "bootstrap_seed": 20261101,
+  "n_rows_scored_with_prior_fallback": 0,
+  "note": "AUC of a score that uses the group label only, never the features. 0.5 means the group column carries no label information."
+ },
+ "group_structure": {
+  "n_rows": 1200,
+  "n_groups": 60,
+  "frac_groups_label_pure": 0.0,
+  "frac_rows_in_a_label_pure_group": 0.0,
+  "frac_rows_in_a_mixed_label_group": 1.0,
+  "group_size": {
+   "min": 20,
+   "p25": 20.0,
+   "median": 20.0,
+   "mean": 20.0,
+   "p75": 20.0,
+   "p95": 20.0,
+   "max": 20,
+   "n_singleton_groups": 0,
+   "frac_rows_in_largest_group": 0.0167
+  }
+ },
+ "split_comparison": {
+  "classifier": "StandardScaler + LogisticRegression(C=1.0, max_iter=2000)",
+  "n_folds": 5,
+  "n_repeats_random_split": 10,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "random_split": {
+   "mean_auc_over_repeats": 0.7932,
+   "auc_last_repeat": 0.7922,
+   "ci95_last_repeat": [
+    0.7671,
+    0.8167
+   ]
+  },
+  "group_split": {
+   "auc": 0.7898,
+   "ci95": [
+    0.7649,
+    0.8157
+   ]
+  },
+  "delta_group_minus_random": {
+   "point": -0.0023,
+   "ci95": [
+    -0.0056,
+    0.0008
+   ],
+   "frac_bootstrap_draws_le_0": 0.935,
+   "note": "negative means performance fell when groups were held out"
+  },
+  "drop_mean_random_to_group": 0.0034
+ },
+ "structure": null,
+ "verdict": {
+  "level": "CLEAN",
+  "reading": "No threshold was crossed. The grouping column does not visibly encode the label on this table. Grouped CV is still good practice, but these diagnostics give no evidence of a provenance shortcut.",
+  "flags_triggered": [],
+  "n_flags": 0,
+  "thresholds_used": {
+   "group_auc": 0.7,
+   "purity": 0.8,
+   "split_drop": 0.05,
+   "nn_gap": 0.2,
+   "scaffold_jaccard": 0.1
+  },
+  "thresholds_are_conventions": "These cut-offs are defaults chosen by us, not established statistics. Override any of them on the command line and report what you used."
+ }
+}

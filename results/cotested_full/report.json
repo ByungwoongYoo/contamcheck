@@ -1,0 +1,162 @@
+{
+ "run": {
+  "contamcheck_version": "0.1.0",
+  "input": "results/tables/cotested_full.tsv",
+  "out": "results/cotested_full",
+  "label_col": "label",
+  "group_col": "document",
+  "smiles_col": "smiles",
+  "label_mapping": {
+   "0": 0,
+   "1": 1
+  },
+  "n_pos": 539,
+  "n_neg": 3490,
+  "seed": 20261101,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 1,
+  "nn_seed": 7,
+  "n_bootstrap": 2000,
+  "folds": 5,
+  "repeats": 10,
+  "feature_cols": [
+   "cc_mw",
+   "cc_clogp",
+   "cc_tpsa",
+   "cc_hbd",
+   "cc_hba",
+   "cc_rotb",
+   "cc_rings",
+   "cc_heavy",
+   "cc_formal_charge",
+   "cc_fracsp3"
+  ],
+  "feature_source": "derived_from_smiles",
+  "python": "3.9.25",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "numpy": "1.23.5",
+  "pandas": "2.3.3",
+  "rdkit_available": true,
+  "argv": [
+   "--input",
+   "results/tables/cotested_full.tsv",
+   "--label-col",
+   "label",
+   "--group-col",
+   "document",
+   "--smiles-col",
+   "smiles",
+   "--derive-descriptors",
+   "--out",
+   "results/cotested_full",
+   "--bootstrap",
+   "2000",
+   "--seed",
+   "20261101",
+   "--bootstrap-seed",
+   "1",
+   "--nn-seed",
+   "7",
+   "--nn-sample",
+   "800"
+  ],
+  "scikit_learn": "1.6.1",
+  "rdkit": "2022.09.5",
+  "wall_seconds": 19.46
+ },
+ "group_identity": {
+  "auc_group_identity_LOO_target_encoding": 0.9468,
+  "ci95": [
+   0.9345,
+   0.9581
+  ],
+  "n_bootstrap_draws": 2000,
+  "bootstrap_seed": 1,
+  "n_rows_scored_with_prior_fallback": 344,
+  "note": "AUC of a score that uses the group label only, never the features. 0.5 means the group column carries no label information."
+ },
+ "group_structure": {
+  "n_rows": 4029,
+  "n_groups": 905,
+  "frac_groups_label_pure": 0.9337,
+  "frac_rows_in_a_label_pure_group": 0.9308,
+  "frac_rows_in_a_mixed_label_group": 0.0692,
+  "group_size": {
+   "min": 1,
+   "p25": 1.0,
+   "median": 2.0,
+   "mean": 4.4519,
+   "p75": 5.0,
+   "p95": 16.0,
+   "max": 81,
+   "n_singleton_groups": 344,
+   "frac_rows_in_largest_group": 0.0201
+  }
+ },
+ "split_comparison": {
+  "classifier": "StandardScaler + LogisticRegression(C=1.0, max_iter=2000)",
+  "n_folds": 5,
+  "n_repeats_random_split": 10,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 1,
+  "random_split": {
+   "mean_auc_over_repeats": 0.7402,
+   "auc_last_repeat": 0.7403,
+   "ci95_last_repeat": [
+    0.7158,
+    0.7652
+   ]
+  },
+  "group_split": {
+   "auc": 0.7288,
+   "ci95": [
+    0.7048,
+    0.7527
+   ]
+  },
+  "delta_group_minus_random": {
+   "point": -0.0115,
+   "ci95": [
+    -0.0151,
+    -0.0078
+   ],
+   "frac_bootstrap_draws_le_0": 1.0,
+   "note": "negative means performance fell when groups were held out"
+  },
+  "drop_mean_random_to_group": 0.0114
+ },
+ "structure": {
+  "n_rows": 4029,
+  "n_parsed": 4029,
+  "fingerprint": "Morgan radius 2, 2048 bits",
+  "nn_sample_size": 800,
+  "nn_seed": 7,
+  "nn_tanimoto_same_class_mean": 0.7658,
+  "nn_tanimoto_cross_class_mean": 0.3193,
+  "n_scaffolds_pos": 294,
+  "n_scaffolds_neg": 1517,
+  "n_scaffolds_shared": 43,
+  "scaffold_jaccard_pos_vs_neg": 0.0243,
+  "scaffold_leakage_random_split": 0.5321,
+  "scaffold_leakage_group_split": 0.101
+ },
+ "verdict": {
+  "level": "CONTAMINATED",
+  "reading": "Two or more diagnostics crossed their thresholds. The label is substantially recoverable from group membership rather than from the property you intend to model. Random-split performance on this table is not trustworthy; grouped cross-validation is mandatory, and the headline number should be the grouped one.",
+  "flags_triggered": [
+   "group identity alone predicts the label at AUC 0.9468 >= threshold 0.70",
+   "93.4% of groups are single-label >= threshold 80%",
+   "same-class nearest-neighbour similarity exceeds cross-class by 0.4465 >= threshold 0.20 (the two classes sit in near-disjoint chemical space)",
+   "between-class Murcko scaffold Jaccard 0.0243 <= threshold 0.10"
+  ],
+  "n_flags": 4,
+  "thresholds_used": {
+   "group_auc": 0.7,
+   "purity": 0.8,
+   "split_drop": 0.05,
+   "nn_gap": 0.2,
+   "scaffold_jaccard": 0.1
+  },
+  "thresholds_are_conventions": "These cut-offs are defaults chosen by us, not established statistics. Override any of them on the command line and report what you used."
+ }
+}

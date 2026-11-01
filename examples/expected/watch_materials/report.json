@@ -1,0 +1,127 @@
+{
+ "run": {
+  "contamcheck_version": "0.1.0",
+  "input": "examples/watch_materials.csv",
+  "out": "examples/expected/watch_materials",
+  "label_col": "conductive",
+  "group_col": "source_paper",
+  "smiles_col": null,
+  "label_mapping": {
+   "no": 0,
+   "yes": 1
+  },
+  "n_pos": 480,
+  "n_neg": 706,
+  "seed": 20261101,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "nn_seed": 20261101,
+  "n_bootstrap": 2000,
+  "folds": 5,
+  "repeats": 10,
+  "feature_cols": [
+   "dopant_frac",
+   "anneal_temp_K",
+   "film_thickness_nm",
+   "grain_size_nm",
+   "lattice_a_A",
+   "o2_partial_pressure_mTorr"
+  ],
+  "feature_source": "auto_numeric",
+  "python": "3.13.5",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "numpy": "2.5.4",
+  "pandas": "3.1.0",
+  "rdkit_available": false,
+  "argv": [
+   "--input",
+   "examples/watch_materials.csv",
+   "--label-col",
+   "conductive",
+   "--group-col",
+   "source_paper",
+   "--out",
+   "examples/expected/watch_materials"
+  ],
+  "scikit_learn": "1.9.1",
+  "wall_seconds": 5.05
+ },
+ "group_identity": {
+  "auc_group_identity_LOO_target_encoding": 0.8077,
+  "ci95": [
+   0.7799,
+   0.8334
+  ],
+  "n_bootstrap_draws": 2000,
+  "bootstrap_seed": 20261101,
+  "n_rows_scored_with_prior_fallback": 0,
+  "note": "AUC of a score that uses the group label only, never the features. 0.5 means the group column carries no label information."
+ },
+ "group_structure": {
+  "n_rows": 1186,
+  "n_groups": 70,
+  "frac_groups_label_pure": 0.0714,
+  "frac_rows_in_a_label_pure_group": 0.0481,
+  "frac_rows_in_a_mixed_label_group": 0.9519,
+  "group_size": {
+   "min": 8,
+   "p25": 13.0,
+   "median": 17.0,
+   "mean": 16.9429,
+   "p75": 22.0,
+   "p95": 24.0,
+   "max": 24,
+   "n_singleton_groups": 0,
+   "frac_rows_in_largest_group": 0.0202
+  }
+ },
+ "split_comparison": {
+  "classifier": "StandardScaler + LogisticRegression(C=1.0, max_iter=2000)",
+  "n_folds": 5,
+  "n_repeats_random_split": 10,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "random_split": {
+   "mean_auc_over_repeats": 0.9847,
+   "auc_last_repeat": 0.9847,
+   "ci95_last_repeat": [
+    0.9784,
+    0.99
+   ]
+  },
+  "group_split": {
+   "auc": 0.9852,
+   "ci95": [
+    0.9795,
+    0.9902
+   ]
+  },
+  "delta_group_minus_random": {
+   "point": 0.0005,
+   "ci95": [
+    -0.0002,
+    0.0013
+   ],
+   "frac_bootstrap_draws_le_0": 0.087,
+   "note": "negative means performance fell when groups were held out"
+  },
+  "drop_mean_random_to_group": -0.0005
+ },
+ "structure": null,
+ "verdict": {
+  "level": "WATCH",
+  "reading": "One diagnostic crossed its threshold. Treat random-split numbers with caution and report grouped-CV numbers alongside them.",
+  "flags_triggered": [
+   "group identity alone predicts the label at AUC 0.8077 >= threshold 0.70"
+  ],
+  "n_flags": 1,
+  "thresholds_used": {
+   "group_auc": 0.7,
+   "purity": 0.8,
+   "split_drop": 0.05,
+   "nn_gap": 0.2,
+   "scaffold_jaccard": 0.1
+  },
+  "thresholds_are_conventions": "These cut-offs are defaults chosen by us, not established statistics. Override any of them on the command line and report what you used."
+ }
+}

@@ -1,0 +1,5 @@
+[contamcheck 0.1.0] seed=20261101 rows=1200 groups=60 -> examples/expected/clean_manufacturing
+  (a) group-identity AUC 0.4558
+  (b) 60 groups, 0.0000 label-pure
+  (c) random 0.7932 vs grouped 0.7898
+  (e) VERDICT CLEAN (0 flags) seed=20261101 [4.89s]

@@ -1,0 +1,199 @@
+{
+ "run": {
+  "contamcheck_version": "0.1.0",
+  "input": "results/tables/gate_cotested.tsv",
+  "out": "results/gate_cotested",
+  "label_col": "label",
+  "group_col": "document",
+  "smiles_col": "smiles",
+  "label_mapping": {
+   "0": 0,
+   "1": 1
+  },
+  "n_pos": 296,
+  "n_neg": 290,
+  "seed": 20261101,
+  "cv_seed": 0,
+  "bootstrap_seed": 3,
+  "nn_seed": 7,
+  "n_bootstrap": 2000,
+  "folds": 5,
+  "repeats": 10,
+  "feature_cols": [
+   "ompf_percentile",
+   "multiporin_percentile",
+   "lipid_percentile",
+   "efflux_percentile",
+   "activity_percentile"
+  ],
+  "feature_source": "explicit",
+  "python": "3.9.25",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "numpy": "1.23.5",
+  "pandas": "2.3.3",
+  "rdkit_available": true,
+  "argv": [
+   "--input",
+   "results/tables/gate_cotested.tsv",
+   "--label-col",
+   "label",
+   "--group-col",
+   "document",
+   "--smiles-col",
+   "smiles",
+   "--out",
+   "results/gate_cotested",
+   "--feature-cols",
+   "ompf_percentile,multiporin_percentile,lipid_percentile,efflux_percentile,activity_percentile",
+   "--compare-feature-cols",
+   "clogp,formal_charge,mw",
+   "--arm-names",
+   "mechgate,baseline",
+   "--cv-seed",
+   "0",
+   "--bootstrap-seed",
+   "3",
+   "--nn-seed",
+   "7",
+   "--bootstrap",
+   "2000",
+   "--seed",
+   "20261101"
+  ],
+  "scikit_learn": "1.6.1",
+  "rdkit": "2022.09.5",
+  "wall_seconds": 5.5
+ },
+ "group_identity": {
+  "auc_group_identity_LOO_target_encoding": 0.8858,
+  "ci95": [
+   0.8627,
+   0.9086
+  ],
+  "n_bootstrap_draws": 2000,
+  "bootstrap_seed": 3,
+  "n_rows_scored_with_prior_fallback": 226,
+  "note": "AUC of a score that uses the group label only, never the features. 0.5 means the group column carries no label information."
+ },
+ "group_structure": {
+  "n_rows": 586,
+  "n_groups": 346,
+  "frac_groups_label_pure": 0.9682,
+  "frac_rows_in_a_label_pure_group": 0.9471,
+  "frac_rows_in_a_mixed_label_group": 0.0529,
+  "group_size": {
+   "min": 1,
+   "p25": 1.0,
+   "median": 1.0,
+   "mean": 1.6936,
+   "p75": 2.0,
+   "p95": 4.0,
+   "max": 9,
+   "n_singleton_groups": 226,
+   "frac_rows_in_largest_group": 0.0154
+  }
+ },
+ "split_comparison": {
+  "classifier": "StandardScaler + LogisticRegression(C=1.0, max_iter=2000)",
+  "n_folds": 5,
+  "n_repeats_random_split": 10,
+  "cv_seed": 0,
+  "bootstrap_seed": 3,
+  "random_split": {
+   "mean_auc_over_repeats": 0.7213,
+   "auc_last_repeat": 0.718,
+   "ci95_last_repeat": [
+    0.6743,
+    0.7588
+   ]
+  },
+  "group_split": {
+   "auc": 0.7107,
+   "ci95": [
+    0.6691,
+    0.7503
+   ]
+  },
+  "delta_group_minus_random": {
+   "point": -0.0073,
+   "ci95": [
+    -0.0169,
+    0.0021
+   ],
+   "frac_bootstrap_draws_le_0": 0.933,
+   "note": "negative means performance fell when groups were held out"
+  },
+  "drop_mean_random_to_group": 0.0106
+ },
+ "arm_comparison": {
+  "cv_seed": 0,
+  "bootstrap_seed": 3,
+  "arm_a": "mechgate",
+  "arm_b": "baseline",
+  "random_split": {
+   "mean_auc_mechgate": 0.7213,
+   "mean_auc_baseline": 0.743,
+   "delta_a_minus_b_last_repeat": -0.022,
+   "ci95": [
+    -0.046,
+    0.0026
+   ]
+  },
+  "group_split": {
+   "auc_mechgate": 0.7107,
+   "auc_baseline": 0.7425,
+   "delta_a_minus_b": -0.0318,
+   "ci95": [
+    -0.0576,
+    -0.0062
+   ]
+  },
+  "shift_in_advantage_random_to_group": -0.0098,
+  "arm_a_cols": [
+   "ompf_percentile",
+   "multiporin_percentile",
+   "lipid_percentile",
+   "efflux_percentile",
+   "activity_percentile"
+  ],
+  "arm_b_cols": [
+   "clogp",
+   "formal_charge",
+   "mw"
+  ]
+ },
+ "structure": {
+  "n_rows": 586,
+  "n_parsed": 586,
+  "fingerprint": "Morgan radius 2, 2048 bits",
+  "nn_sample_size": 586,
+  "nn_seed": 7,
+  "nn_tanimoto_same_class_mean": 0.56,
+  "nn_tanimoto_cross_class_mean": 0.3046,
+  "n_scaffolds_pos": 189,
+  "n_scaffolds_neg": 241,
+  "n_scaffolds_shared": 7,
+  "scaffold_jaccard_pos_vs_neg": 0.0165,
+  "scaffold_leakage_random_split": 0.3155,
+  "scaffold_leakage_group_split": 0.0771
+ },
+ "verdict": {
+  "level": "CONTAMINATED",
+  "reading": "Two or more diagnostics crossed their thresholds. The label is substantially recoverable from group membership rather than from the property you intend to model. Random-split performance on this table is not trustworthy; grouped cross-validation is mandatory, and the headline number should be the grouped one.",
+  "flags_triggered": [
+   "group identity alone predicts the label at AUC 0.8858 >= threshold 0.70",
+   "96.8% of groups are single-label >= threshold 80%",
+   "same-class nearest-neighbour similarity exceeds cross-class by 0.2554 >= threshold 0.20 (the two classes sit in near-disjoint chemical space)",
+   "between-class Murcko scaffold Jaccard 0.0165 <= threshold 0.10"
+  ],
+  "n_flags": 4,
+  "thresholds_used": {
+   "group_auc": 0.7,
+   "purity": 0.8,
+   "split_drop": 0.05,
+   "nn_gap": 0.2,
+   "scaffold_jaccard": 0.1
+  },
+  "thresholds_are_conventions": "These cut-offs are defaults chosen by us, not established statistics. Override any of them on the command line and report what you used."
+ }
+}

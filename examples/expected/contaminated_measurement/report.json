@@ -1,0 +1,128 @@
+{
+ "run": {
+  "contamcheck_version": "0.1.0",
+  "input": "examples/contaminated_measurement.csv",
+  "out": "examples/expected/contaminated_measurement",
+  "label_col": "corrosion_pass",
+  "group_col": "campaign",
+  "smiles_col": null,
+  "label_mapping": {
+   "0": 0,
+   "1": 1
+  },
+  "n_pos": 815,
+  "n_neg": 675,
+  "seed": 20261101,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "nn_seed": 20261101,
+  "n_bootstrap": 2000,
+  "folds": 5,
+  "repeats": 10,
+  "feature_cols": [
+   "cr_wt_pct",
+   "ni_wt_pct",
+   "mo_wt_pct",
+   "hardness_HV",
+   "surface_roughness_um",
+   "chloride_ppm"
+  ],
+  "feature_source": "auto_numeric",
+  "python": "3.13.5",
+  "platform": "Linux-6.12.94+-x86_64-with-glibc2.41",
+  "numpy": "2.5.4",
+  "pandas": "3.1.0",
+  "rdkit_available": false,
+  "argv": [
+   "--input",
+   "examples/contaminated_measurement.csv",
+   "--label-col",
+   "corrosion_pass",
+   "--group-col",
+   "campaign",
+   "--out",
+   "examples/expected/contaminated_measurement"
+  ],
+  "scikit_learn": "1.9.1",
+  "wall_seconds": 6.12
+ },
+ "group_identity": {
+  "auc_group_identity_LOO_target_encoding": 0.9415,
+  "ci95": [
+   0.9258,
+   0.9547
+  ],
+  "n_bootstrap_draws": 2000,
+  "bootstrap_seed": 20261101,
+  "n_rows_scored_with_prior_fallback": 0,
+  "note": "AUC of a score that uses the group label only, never the features. 0.5 means the group column carries no label information."
+ },
+ "group_structure": {
+  "n_rows": 1490,
+  "n_groups": 48,
+  "frac_groups_label_pure": 0.1667,
+  "frac_rows_in_a_label_pure_group": 0.1242,
+  "frac_rows_in_a_mixed_label_group": 0.8758,
+  "group_size": {
+   "min": 15,
+   "p25": 23.0,
+   "median": 32.0,
+   "mean": 31.0417,
+   "p75": 38.25,
+   "p95": 43.0,
+   "max": 44,
+   "n_singleton_groups": 0,
+   "frac_rows_in_largest_group": 0.0295
+  }
+ },
+ "split_comparison": {
+  "classifier": "StandardScaler + LogisticRegression(C=1.0, max_iter=2000)",
+  "n_folds": 5,
+  "n_repeats_random_split": 10,
+  "cv_seed": 20261101,
+  "bootstrap_seed": 20261101,
+  "random_split": {
+   "mean_auc_over_repeats": 0.6165,
+   "auc_last_repeat": 0.6168,
+   "ci95_last_repeat": [
+    0.5895,
+    0.6441
+   ]
+  },
+  "group_split": {
+   "auc": 0.4577,
+   "ci95": [
+    0.4279,
+    0.4865
+   ]
+  },
+  "delta_group_minus_random": {
+   "point": -0.1591,
+   "ci95": [
+    -0.1771,
+    -0.1414
+   ],
+   "frac_bootstrap_draws_le_0": 1.0,
+   "note": "negative means performance fell when groups were held out"
+  },
+  "drop_mean_random_to_group": 0.1588
+ },
+ "structure": null,
+ "verdict": {
+  "level": "CONTAMINATED",
+  "reading": "Two or more diagnostics crossed their thresholds. The label is substantially recoverable from group membership rather than from the property you intend to model. Random-split performance on this table is not trustworthy; grouped cross-validation is mandatory, and the headline number should be the grouped one.",
+  "flags_triggered": [
+   "group identity alone predicts the label at AUC 0.9415 >= threshold 0.70",
+   "baseline AUC fell by 0.1591 from random to grouped split >= threshold 0.05"
+  ],
+  "n_flags": 2,
+  "thresholds_used": {
+   "group_auc": 0.7,
+   "purity": 0.8,
+   "split_drop": 0.05,
+   "nn_gap": 0.2,
+   "scaffold_jaccard": 0.1
+  },
+  "thresholds_are_conventions": "These cut-offs are defaults chosen by us, not established statistics. Override any of them on the command line and report what you used."
+ }
+}

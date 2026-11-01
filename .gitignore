@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env*/
+.pytest_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+.DS_Store
+# local runs (keep examples/expected/ and results/ under version control)
+out/
+runs/

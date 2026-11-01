@@ -1,0 +1,6 @@
+[contamcheck 0.1.0] seed=20261101 rows=4029 groups=905 -> results/cotested_full
+  (a) group-identity AUC 0.9468
+  (b) 905 groups, 0.9337 label-pure
+  (c) random 0.7402 vs grouped 0.7288
+  (d) nn same 0.7658 cross 0.3193 scaffold Jaccard 0.0243
+  (e) VERDICT CONTAMINATED (4 flags) seed=20261101 [19.46s]

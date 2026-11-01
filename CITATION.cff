@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "contamcheck: diagnostics for provenance shortcuts in labelled tabular datasets"
+authors:
+  - family-names: Yoo
+    given-names: Byungwoong
+version: 0.1.0
+date-released: 2026-11-01
+license: MIT
+type: software
+repository-code: "https://github.com/ByungwoongYoo/contamcheck"
+url: "https://github.com/ByungwoongYoo/contamcheck"

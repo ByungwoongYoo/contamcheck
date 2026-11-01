@@ -1,0 +1,5 @@
+[contamcheck 0.1.0] seed=20261101 rows=1490 groups=48 -> examples/expected/contaminated_measurement
+  (a) group-identity AUC 0.9415
+  (b) 48 groups, 0.1667 label-pure
+  (c) random 0.6165 vs grouped 0.4577
+  (e) VERDICT CONTAMINATED (2 flags) seed=20261101 [6.12s]
