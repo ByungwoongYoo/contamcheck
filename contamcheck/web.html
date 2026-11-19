@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Contamcheck · Dataset split audit</title>
+<style>
+  :root{color-scheme:light;--ink:#172b33;--mute:#50616a;--line:#d9e7e9;--white:#fff;--bg:#f2f8f8;--teal:#087165;--violet:#634bac;--soft:#e4f4ee;--danger:#8d312c;--mono:ui-monospace,Consolas,monospace}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+  main{max-width:1120px;margin:auto;padding:40px 24px 60px}
+  header{padding-bottom:24px;border-bottom:1px solid #b9d3d6}
+  header strong{font-size:18px;letter-spacing:-.025em;color:var(--teal)}
+  h1{font-size:clamp(31px,6vw,61px);line-height:1.05;letter-spacing:-.045em;margin:19px 0 11px}
+  h2{font-size:21px;letter-spacing:-.025em;margin:0 0 16px}
+  p{margin:0 0 13px}
+  header p,.quiet{color:var(--mute)}
+  .layout{display:grid;grid-template-columns:minmax(265px,1fr) minmax(0,1.45fr);gap:19px;margin-top:24px;align-items:start}
+  .panel{background:white;border:1px solid var(--line);padding:22px;border-radius:18px;box-shadow:0 8px 24px #324e5611}
+  .examples{display:flex;flex-wrap:wrap;gap:8px}
+  button,select,input{font:inherit;color:inherit}
+  button{cursor:pointer}
+  button:disabled{cursor:default;opacity:.55}
+  button,select,.picker,input[type=number]{background:#fff;border:1px solid #a5c5cb;border-radius:8px;padding:8px 11px}
+  button:hover:not(:disabled){border-color:var(--teal)}
+  :focus-visible{outline:3px solid #52a7bb;outline-offset:3px}
+  .primary{background:var(--teal);color:white;border-color:var(--teal);font-weight:650;padding:11px 17px}
+  .picker{display:block;margin:12px 0;max-width:100%;width:100%;background:#f7fafb}
+  input::file-selector-button{font:inherit;color:var(--teal);background:var(--soft);border:0;border-radius:5px;padding:5px 8px;margin-right:8px;cursor:pointer}
+  label span{display:block;margin:0 0 5px;font-weight:640}
+  .roles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+  select{max-width:100%;width:100%}
+  fieldset{margin:15px 0;padding:8px 11px;border:1px solid var(--line);border-radius:8px;min-width:0}
+  legend{padding:0 5px;font-weight:640}
+  #features{display:flex;flex-direction:column;max-height:152px;overflow:auto;gap:4px}
+  .feature{display:flex;align-items:start;gap:7px;overflow-wrap:anywhere}
+  .choose-row{display:flex;align-items:end;justify-content:space-between;gap:8px;flex-wrap:wrap}
+  input[type=number]{width:65px}
+  #file-meta{font-family:var(--mono);font-size:13px;overflow-wrap:anywhere}
+  #status{margin-top:13px;color:var(--mute);min-height:22px}
+  #status.error{color:var(--danger)}
+  .empty{padding:25px 0;color:var(--mute);border-top:1px solid var(--line)}
+  .metric{margin-top:18px}
+  .score-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .score{font:600 22px/1.1 var(--mono)}
+  .track{height:12px;background:#e8efef;border-radius:10px;overflow:hidden;margin-top:8px}
+  .bar{height:100%;background:var(--teal);width:0}
+  .bar.held{background:var(--violet)}
+  .axis{display:flex;justify-content:space-between;font:12px var(--mono);color:var(--mute);padding:5px 0 0}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:18px 0}
+  .stat{background:#f3f7fa;padding:12px 10px;border-radius:10px;margin:0}
+  .stat strong{display:block;font:600 20px/1.2 var(--mono)}
+  .stat span{color:var(--mute);font-size:13px}
+  details{border-top:1px solid var(--line);margin:16px 0 13px;padding-top:12px}
+  summary{cursor:pointer;font-weight:640}
+  pre{white-space:pre-wrap;word-break:break-word;font:12px/1.5 var(--mono)}
+  #download{margin-top:4px}
+  [hidden]{display:none!important}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}main{padding:22px 13px 45px}.panel{padding:17px}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <strong>Contamcheck</strong>
+  <h1>Does the score hold on new groups?</h1>
+  <p>Compare a random row split with a split that holds out whole labs, batches, or sources.</p>
+</header>
+<div class="layout">
+  <section class="panel" aria-labelledby="setup">
+    <h2 id="setup">Set up an audit</h2>
+    <div class="examples">
+      <button type="button" data-example="shortcut">Try a source shortcut</button>
+      <button type="button" data-example="transferable">Try a transferable signal</button>
+    </div>
+    <label><span class="file-label" style="margin-top:15px">Or choose a local CSV</span><input class="picker" type="file" id="csv-file" accept=".csv,text/csv"></label>
+    <p id="file-meta" hidden></p>
+    <form id="audit-form" hidden>
+      <div class="roles">
+        <label><span>Binary label</span><select id="label" required></select></label>
+        <label><span>Holdout group</span><select id="group" required></select></label>
+      </div>
+      <fieldset>
+        <legend>Numeric input features</legend>
+        <div id="features"></div>
+      </fieldset>
+      <div class="choose-row">
+        <label><span>Folds</span><input type="number" min="2" max="10" value="5" id="folds" required></label>
+        <button class="primary" type="submit">Run audit</button>
+      </div>
+    </form>
+    <p id="status" role="status" aria-live="polite"></p>
+    <p class="quiet">Your file stays on this computer. The comparison runs in the local Python process.</p>
+  </section>
+  <section class="panel" aria-labelledby="result-heading">
+    <h2 id="result-heading">Split comparison</h2>
+    <p id="empty" class="empty">Load an example or CSV to compare the same model and metric on both splits.</p>
+    <div id="results" hidden>
+      <div class="metric">
+        <div class="score-row"><span>Random row split</span><strong class="score" id="random-score"></strong></div>
+        <div class="track" aria-hidden="true"><div class="bar" id="random-bar"></div></div>
+      </div>
+      <div class="metric">
+        <div class="score-row"><span>Held-out groups</span><strong class="score" id="grouped-score"></strong></div>
+        <div class="track" aria-hidden="true"><div class="bar held" id="grouped-bar"></div></div>
+      </div>
+      <div class="axis" aria-hidden="true"><span>0</span><span>0.5</span><span>1 ROC AUC</span></div>
+      <div class="stats">
+        <p class="stat"><strong id="drop"></strong><span>Random minus grouped AUC</span></p>
+        <p class="stat"><strong id="overlap"></strong><span>Largest overlap across grouped folds</span></p>
+      </div>
+      <p id="interpretation"></p>
+      <p id="random-overlap" class="quiet"></p>
+      <details>
+        <summary>Method and input details</summary>
+        <pre id="method"></pre>
+      </details>
+      <button id="download" type="button">Download JSON report</button>
+    </div>
+  </section>
+</div>
+</main>
+<script nonce="__AUDIT_NONCE__">
+(() => {
+  'use strict';
+  const $ = id => document.getElementById(id);
+  const token = document.currentScript.nonce;
+  const controls = document.querySelectorAll('button[data-example], #csv-file, #audit-form select, #audit-form input, #audit-form button');
+  let current = null;
+  let report = null;
+
+  function message(text, error = false) {
+    $('status').textContent = text;
+    $('status').classList.toggle('error', error);
+  }
+  function busy(state) {
+    for (const control of controls) control.disabled = state;
+    for (const input of $('features').querySelectorAll('input')) input.disabled = state;
+  }
+  function clearReport() {
+    report = null;
+    $('results').hidden = true;
+    $('empty').hidden = false;
+  }
+  async function request(path, data) {
+    const response = await fetch(path, {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'X-Contamcheck-Local': token},
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'The server could not complete the request.');
+    return result;
+  }
+  function chooseColumns(id, columns, value) {
+    const selector = $(id);
+    selector.replaceChildren(new Option('Choose column', '', true, true));
+    for (const column of columns) selector.add(new Option(column, column));
+    if (value) selector.value = value;
+  }
+  function updateFeatures() {
+    const checked = new Map([...$('features').querySelectorAll('input')].map(input => [input.value, input.checked]));
+    const container = $('features');
+    container.replaceChildren();
+    for (const name of current.info.numeric) {
+      if (name === $('label').value || name === $('group').value) continue;
+      const label = document.createElement('label');
+      label.className = 'feature';
+      const input = document.createElement('input');
+      input.type = 'checkbox';
+      input.value = name;
+      input.checked = checked.get(name) ?? true;
+      label.append(input, document.createTextNode(name));
+      container.append(label);
+    }
+    if (!container.children.length) container.textContent = 'Choose roles that leave a numeric input feature.';
+  }
+  async function load(source, name, label, group) {
+    const info = await request('/api/columns', {csv: source});
+    current = {source, info};
+    chooseColumns('label', info.columns, label);
+    chooseColumns('group', info.columns, group);
+    $('features').replaceChildren();
+    updateFeatures();
+    $('file-meta').textContent = name + ' · ' + info.rows.toLocaleString() + ' rows';
+    $('file-meta').hidden = false;
+    $('audit-form').hidden = false;
+    message(label && group ? 'Example loaded. Run the audit to see both scores.' : 'Choose the label, holdout group, and numeric features.');
+  }
+  async function openFile(callback) {
+    busy(true);
+    current = null;
+    $('file-meta').hidden = true;
+    $('audit-form').hidden = true;
+    clearReport();
+    message('Reading the CSV…');
+    try {
+      await callback();
+    } catch (error) {
+      message(error.message, true);
+    } finally {
+      busy(false);
+    }
+  }
+  $('csv-file').addEventListener('change', () => {
+    const file = $('csv-file').files[0];
+    if (file) openFile(async () => {
+      if (file.size > 4 * 1024 * 1024) throw new Error('Choose a CSV under 4 MB.');
+      const bytes = await file.arrayBuffer();
+      let text;
+      try {
+        text = new TextDecoder('utf-8', {fatal: true, ignoreBOM: true}).decode(bytes);
+      } catch (error) {
+        throw new Error('Save the CSV as UTF-8 and try again.');
+      }
+      await load(text, file.name);
+    });
+    $('csv-file').value = '';
+  });
+  for (const button of document.querySelectorAll('[data-example]')) {
+    button.addEventListener('click', () => openFile(async () => {
+      const result = await request('/api/example', {name: button.dataset.example});
+      const name = button.dataset.example === 'shortcut' ? 'Synthetic source shortcut' : 'Synthetic transferable signal';
+      await load(result.csv, name, result.label, result.group);
+    }));
+  }
+  $('audit-form').addEventListener('change', event => {
+    if (event.target === $('label') || event.target === $('group')) updateFeatures();
+    clearReport();
+    message('Run the audit with these settings.');
+  });
+  function show(result) {
+    const comparison = result.comparison;
+    $('random-score').textContent = comparison.random_auc.toFixed(4);
+    $('grouped-score').textContent = comparison.grouped_auc.toFixed(4);
+    $('random-bar').style.width = (100 * comparison.random_auc) + '%';
+    $('grouped-bar').style.width = (100 * comparison.grouped_auc) + '%';
+    const drop = comparison.random_minus_grouped_auc;
+    $('drop').textContent = (drop > 0 ? '+' : '') + drop.toFixed(4);
+    $('overlap').textContent = comparison.grouped_max_overlapping_groups + ' groups';
+    $('interpretation').textContent = result.interpretation;
+    $('random-overlap').textContent = 'Largest train–test overlap in the random folds: ' +
+      comparison.random_max_overlapping_groups + ' groups.';
+    $('method').textContent = JSON.stringify({dataset: result.dataset, method: result.method}, null, 2);
+    report = result;
+    $('empty').hidden = true;
+    $('results').hidden = false;
+  }
+  $('audit-form').addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!current) return;
+
+    const features = [...$('features').querySelectorAll(':checked')].map(input => input.value);
+    const settings = {
+      csv: current.source, label: $('label').value, group: $('group').value,
+      folds: Number($('folds').value), features
+    };
+    busy(true);
+    clearReport();
+    message('Fitting the baseline on both splits…');
+    try {
+      show(await request('/api/audit', settings));
+      message('Audit complete.');
+    } catch (error) {
+      message(error.message, true);
+    } finally {
+      busy(false);
+    }
+  });
+  $('download').addEventListener('click', () => {
+    if (!report) return;
+    const url = URL.createObjectURL(new Blob([JSON.stringify(report, null, 2)], {type: 'application/json'}));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'contamcheck-report.json';
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  });
+})();
+</script>
+</body>
+</html>

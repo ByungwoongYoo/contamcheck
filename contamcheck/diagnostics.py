@@ -4,6 +4,7 @@ from __future__ import annotations
 import collections
 
 import numpy as np
+from sklearn.impute import SimpleImputer
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import GroupKFold, StratifiedKFold
 from sklearn.pipeline import make_pipeline
@@ -88,7 +89,9 @@ def group_structure(groups, y):
 # ---------------------------------------------------------------- (c) random vs grouped
 def _clf():
     return make_pipeline(
-        StandardScaler(), LogisticRegression(max_iter=2000, C=1.0, solver="lbfgs")
+        SimpleImputer(strategy="median"),
+        StandardScaler(),
+        LogisticRegression(max_iter=2000, C=1.0, solver="lbfgs"),
     )
 
 

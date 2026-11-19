@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "contamcheck"
-version = "0.1.0"
-description = "Detect provenance shortcuts (source, batch, campaign, instrument, lab) that inflate random-split cross-validation on labelled tabular datasets."
+version = "0.2.0"
+description = "Audit provenance shortcuts and compare random and group-held-out cross-validation on labelled tabular datasets."
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
@@ -44,6 +44,9 @@ Issues = "https://github.com/ByungwoongYoo/contamcheck/issues"
 
 [tool.setuptools]
 packages = ["contamcheck"]
+
+[tool.setuptools.package-data]
+contamcheck = ["web.html"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

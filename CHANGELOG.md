@@ -2,6 +2,11 @@
 
 All notable changes to this project are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning: [SemVer](https://semver.org/).
 
+## [0.2.0]
+
+- Added a local browser interface for comparing random and group-held-out scores with CSV input, two synthetic examples, and downloadable JSON results.
+- Write CLI Markdown reports as UTF-8 on all platforms.
+
 ## [0.1.0] — 2026-11-01
 
 First public release.

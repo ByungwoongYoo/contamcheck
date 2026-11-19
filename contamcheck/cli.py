@@ -273,7 +273,7 @@ def main(argv=None) -> int:
     report["verdict"] = diagnostics.verdict(report, thresholds)
     report["run"]["wall_seconds"] = round(time.time() - t0, 2)
     _write(args.out, report)
-    with open(os.path.join(args.out, "report.md"), "w") as fh:
+    with open(os.path.join(args.out, "report.md"), "w", encoding="utf-8") as fh:
         fh.write(render_markdown(report))
     print(f"  (e) VERDICT {report['verdict']['level']} "
           f"({report['verdict']['n_flags']} flags) seed={seed} "

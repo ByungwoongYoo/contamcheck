@@ -2,7 +2,7 @@
 
 **Is your cross-validation score measuring the property, or the provenance?**
 
-`contamcheck` tests whether a labelled tabular dataset carries a *provenance shortcut*: a grouping column — source publication, measurement campaign, production batch, instrument, lab, site — that predicts the label on its own. When that happens, a random train/test split puts rows from the same group on both sides, the model learns "which campaign is this?" instead of the physics or chemistry you care about, and the random-split score is inflated.
+`contamcheck` tests whether a grouping column such as source publication, measurement campaign, production batch, instrument, lab, or site predicts the label on its own. A random split can put observations from the same group into training and test sets. If predictors contain cues that identify those groups, random cross-validation can overstate how well a model works on new groups.
 
 This is common in compiled datasets: materials property tables merged from many papers, manufacturing data spread over batches and lines, measurement data from several instruments or labs, and bioactivity data compiled from many publications. `contamcheck` gives you a quick, reproducible, seeded answer before you report a number.
 
@@ -12,10 +12,25 @@ It reports:
 |---|---|---|
 | (a) | **group-alone AUC** | how well the group column predicts the label with *no features at all* (leave-one-out target encoding, bootstrap 95% CI) |
 | (b) | **group label purity** and group-size distribution | what fraction of groups contain only one label |
-| (c) | **random-split vs group-held-out CV** | the same baseline classifier under `StratifiedKFold` and `GroupKFold`, with a paired bootstrap of the difference |
+| (c) | **random-split vs group-held-out CV** | the same baseline classifier under `StratifiedKFold` and `GroupKFold`. The random score is averaged across repeats. The paired bootstrap compares grouped predictions with those from the final random repeat. |
 | (c2) | optional **feature-arm comparison** | does one feature set's advantage survive grouped CV? |
 | (d) | optional **structure diagnostics** (molecules only) | nearest-neighbour Tanimoto within vs across class, Murcko scaffold overlap — needs a SMILES column and RDKit |
 | (e) | **verdict** | `CLEAN` / `WATCH` / `CONTAMINATED` from counted, overridable thresholds |
+
+## Start in your browser
+
+From this repository, install the package and start the local audit.
+
+```bash
+python -m pip install .
+python -m contamcheck.web
+```
+
+Open **http://127.0.0.1:8765** and select a synthetic example, or choose your own UTF-8 CSV. Select the binary label, the unit you want to hold out (such as a lab or batch), and the numeric predictors you would actually have at inference time. Run the audit to compare both AUCs and download a JSON report with settings and input fingerprint. Use `--port 0` to find a free local port.
+
+The browser audit fits the same logistic regression baseline on the same rows in both schemes. It uses shuffled stratified folds for the random split and gives each group to one test fold for the grouped split. Imputation and scaling are fitted inside each training fold. The output shows pooled out-of-fold ROC AUC and verifies group separation. A gap is a sensitivity result. Treat it as a reason to review the grouping and predictors, since several mechanisms can produce it.
+
+The local server binds to loopback and keeps the selected CSV in memory for the request. No external API, telemetry, trained model, or remote upload is involved. The browser supports up to 25,000 rows and 120 columns in a 4 MiB request. Use the CLI below for larger data, optional molecular diagnostics, or the full diagnostic report.
 
 ## Install
 
@@ -26,7 +41,7 @@ pip install -e .            # numpy, pandas, scikit-learn
 pip install -e ".[chem]"    # optional: RDKit, for the molecule structure diagnostics
 ```
 
-Python ≥ 3.9. No network access, no telemetry; everything runs locally on one core.
+Requires Python 3.9 or later. The diagnostics run locally.
 
 ## Quickstart
 
@@ -52,7 +67,7 @@ Console output from the quickstart above (copied from [`examples/expected/contam
   (e) VERDICT CONTAMINATED (2 flags) seed=20261101 [6.12s]
 ```
 
-The campaign alone predicts corrosion pass/fail at AUC 0.9415 [95% CI 0.9258, 0.9547]. A baseline classifier on the composition and process features scores 0.6165 under random 5-fold CV but 0.4577 when whole campaigns are held out (paired-bootstrap delta −0.1591 [−0.1771, −0.1414]): the random-split score came from recognising each campaign's instrument offset, not from a transferable signal.
+The campaign alone predicts corrosion pass/fail at AUC 0.9415 [95% CI 0.9258, 0.9547]. The baseline averages 0.6165 across ten repeats of random 5-fold CV and scores 0.4577 when whole campaigns are held out. The paired bootstrap compares the grouped score with the final random repeat (0.6168), for a difference of −0.1591 [−0.1771, −0.1414]. The synthetic generator assigns a distinct instrument offset to each campaign.
 
 All three shipped examples (synthetic, seeded — see [`examples/`](examples/)):
 
@@ -74,7 +89,7 @@ The case that motivated the tool: a public bioactivity dataset (molecules labell
 | cotested_full | 4029 | 905 | 0.9468 [0.9345, 0.9581] | 0.9337 | 0.7402 | 0.7288 | CONTAMINATED (4) |
 | gate_cotested | 586 | 346 | 0.8858 [0.8627, 0.9086] | 0.9682 | 0.7213 | 0.7107 | CONTAMINATED (4) |
 
-The publication label alone predicts activity better than the feature-based classifier under either split. Note the random-vs-grouped gap is small here (none crossed −0.05) — the linear baseline was not exploiting the groups much — yet the group-alone diagnostic shows the shortcut is available to any model flexible enough to find it.
+The group-only result flags the publication column as predictive in this table. The small baseline gap does not establish how a different model would behave.
 
 ## Reading the verdict
 
@@ -124,7 +139,7 @@ If `contamcheck` helps your work, please cite it:
   author  = {Yoo, Byungwoong},
   title   = {contamcheck: diagnostics for provenance shortcuts in labelled tabular datasets},
   year    = {2026},
-  version = {0.1.0},
+  version = {0.2.0},
   url     = {https://github.com/ByungwoongYoo/contamcheck},
   license = {MIT}
 }

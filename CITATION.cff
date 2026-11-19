@@ -4,8 +4,7 @@ title: "contamcheck: diagnostics for provenance shortcuts in labelled tabular da
 authors:
   - family-names: Yoo
     given-names: Byungwoong
-version: 0.1.0
-date-released: 2026-11-01
+version: 0.2.0
 license: MIT
 type: software
 repository-code: "https://github.com/ByungwoongYoo/contamcheck"
