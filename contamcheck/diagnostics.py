@@ -239,8 +239,7 @@ def verdict(report, thresholds):
         if (same - cross) >= thresholds["nn_gap"]:
             flags.append(
                 f"same-class nearest-neighbour similarity exceeds cross-class by "
-                f"{same - cross:.4f} >= threshold {thresholds['nn_gap']:.2f} "
-                "(the two classes sit in near-disjoint chemical space)"
+                f"{same - cross:.4f} >= threshold {thresholds['nn_gap']:.2f}"
             )
         jac = st.get("scaffold_jaccard_pos_vs_neg")
         if jac is not None and jac <= thresholds["scaffold_jaccard"]:
@@ -252,9 +251,8 @@ def verdict(report, thresholds):
     if len(flags) == 0:
         level = "CLEAN"
         text = (
-            "No threshold was crossed. The grouping column does not visibly encode "
-            "the label on this table. Grouped CV is still good practice, but these "
-            "diagnostics give no evidence of a provenance shortcut."
+            "No diagnostic crossed its threshold. Choose evaluation splits to "
+            "match how the model will be used."
         )
     elif len(flags) == 1:
         level = "WATCH"
@@ -265,11 +263,9 @@ def verdict(report, thresholds):
     else:
         level = "CONTAMINATED"
         text = (
-            "Two or more diagnostics crossed their thresholds. The label is "
-            "substantially recoverable from group membership rather than from the "
-            "property you intend to model. Random-split performance on this table "
-            "is not trustworthy; grouped cross-validation is mandatory, and the "
-            "headline number should be the grouped one."
+            "At least two diagnostics crossed their thresholds. Inspect which "
+            "flags fired. If the model will be used on new groups, lead with "
+            "grouped cross-validation when available."
         )
     return {
         "level": level,
